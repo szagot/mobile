@@ -175,7 +175,7 @@ $saida = substr($saida, 0, -1);
 if (! empty($saida)) {
     // Cabeçalhos
     header('Content-type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename=b2w-' . date('Y-m-d-H-i') . '.csv');
+    header('Content-Disposition: attachment; filename=mobly-' . date('Y-m-d-H-i') . '.csv');
     header('Cache-Control: no-cache, no-store, must-revalidate'); # HTTP 1.1
     header('Pragma: no-cache'); # HTTP 1.0
     header('Expires: 0'); # Proxies
