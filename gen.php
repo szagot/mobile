@@ -32,7 +32,7 @@ if (! $descType || empty($descType)) {
     if (file_exists($pathConf)) {
         $config = json_decode(file_get_contents($pathConf));
         // Verificando existencia de chaves
-        if (isset($config->idParceiro, $config->descType)) {
+        if (isset($config->descType)) {
             $descType = $config->descType;
         }
     }
@@ -53,7 +53,7 @@ if (! $descType || empty($descType)) {
 
 // Gravando Valores escolhidos por padrão
 file_put_contents($pathConf, json_encode([
-    'descType'   => $descType
+    'descType' => $descType
 ]));
 
 // Diferentes descrições
@@ -101,12 +101,10 @@ $produtos = $pdo->execute("
         '' AS SUB_FAMILIA,
         IF( PRO_SOB_ENCOMENDA = 1, '1', '0' ) AS PROCEDENCIA_ITEM,
         FOR_NOME AS MARCA,
-        produto.PRO_ID AS TEMP_ID,
-        SEC_URL AS TEMP_SEC
+        produto.PRO_ID AS TEMP_ID
 
     FROM produto
         LEFT JOIN fornecedor ON produto.FOR_ID = fornecedor.FOR_ID
-        INNER JOIN secao_prod ON produto.SEC_ID = secao_prod.SEC_ID
     
     WHERE
       SUB_PRO_ID IS NULL AND PRO_VALOR > 0
@@ -115,11 +113,6 @@ $produtos = $pdo->execute("
 // Tratando os dados
 $saida = '';
 foreach ($produtos as $produto) {
-    // Verificando seções
-    $produto->TEMP_SEC = str_replace(' ', '', $produto->TEMP_SEC);
-    if (! preg_match('/^[0-9]+\|[a-z]+/i', $produto->TEMP_SEC)) {
-        continue;
-    }
 
     // Pegando Imagens
     $imagens = $pdo->execute("
@@ -143,15 +136,8 @@ foreach ($produtos as $produto) {
 
     $produto->IMAGEM_ITEM = implode(',', $imgTemp);
 
-    // Formatando Seçoes
-    list($depto, $setor, $familia, $subFamilia) = explode('>', $produto->TEMP_SEC);
-    list($produto->DEPARTAMENTO) = explode('|', $depto);
-    list($produto->SETOR) = explode('|', $setor);
-    list($produto->FAMILIA) = explode('|', $familia);
-    list($produto->SUB_FAMILIA) = explode('|', $subFamilia);
-
     // Apagando chaves temporárias
-    unset($produto->TEMP_ID, $produto->TEMP_SEC);
+    unset($produto->TEMP_ID);
 
     // Corrigindo descrição
     $produto->DESCRICAO_ITEM =
