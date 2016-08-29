@@ -5,18 +5,27 @@
  * Date: 23/08/2016
  * Time: 15:05
  */
+if (! isset($_SESSION[ 'TMWXD' ])) {
+    @session_start();
+}
+
+date_default_timezone_set('America/Sao_Paulo');
+
+if ((time() - $_SESSION[ 'TMWXD' ][ 'acesso' ]) > $_SESSION[ 'TMWXD' ][ 'periodo' ]) {
+    // Deslogar ao final do período
+    die('Acesso negado.');
+}
 
 require_once '../config/conecta.class.php';
 
 // Inicializa variáveis
-$idParceiro = filter_input(INPUT_POST, 'id_parceiro');
 $descType = filter_input(INPUT_POST, 'desc_type');
 $erro = filter_input(INPUT_GET, 'msg');
-$pathConf = __DIR__ . DIRECTORY_SEPARATOR . 'b2w.conf';
+$pathConf = __DIR__ . DIRECTORY_SEPARATOR . 'mobly.conf';
 $pdo = new Conecta();
 
 // ID Parceiro não informado?
-if (! $idParceiro || empty($idParceiro)) {
+if (! $descType || empty($descType)) {
     header('Content-type: text/html; charset=utf-8');
 
     // Verificando arquivo de pesquisa
@@ -24,7 +33,6 @@ if (! $idParceiro || empty($idParceiro)) {
         $config = json_decode(file_get_contents($pathConf));
         // Verificando existencia de chaves
         if (isset($config->idParceiro, $config->descType)) {
-            $idParceiro = $config->idParceiro;
             $descType = $config->descType;
         }
     }
@@ -45,7 +53,6 @@ if (! $idParceiro || empty($idParceiro)) {
 
 // Gravando Valores escolhidos por padrão
 file_put_contents($pathConf, json_encode([
-    'idParceiro' => $idParceiro,
     'descType'   => $descType
 ]));
 
@@ -71,7 +78,6 @@ $ePromo = 'PRO_PROMOCAO > 0 AND
 // Gerando pesquisa
 $produtos = $pdo->execute("
     SELECT 
-        '$idParceiro' AS ID_PARCEIRO,
         PRO_REF AS ID_ITEM_PARCEIRO,
         PRO_NOME AS NOME_ITEM,
         ROUND(PRO_PESO,0) AS PESO_UNITARIO,
