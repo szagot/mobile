@@ -1,0 +1,154 @@
+@import url("//tmwxd.com.br/fontes/tmw-icons.css");
+
+* {
+    margin: 0;
+    padding: 0;
+    outline: 0 none;
+}
+
+body {
+    font: 12px Arial, Helvetica, sans-serif;
+}
+
+p {
+    margin:10px 0;
+}
+
+#formB2W {
+    display: block;
+    max-width: 446px;
+    margin: 20px;
+    padding: 20px;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+#formB2W::after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+#formB2W .campo {
+    float: left;
+    margin-right: 10px;
+}
+
+#formB2W .campo:last-child {
+    margin-right: 0;
+}
+
+#formB2W .title {
+    display: block;
+    height: 14px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+#formB2W .text, #formB2W .desc, #formB2W .btn {
+    max-height: 30px;
+    padding: 7px 10px;
+    color: #555;
+    font-size: 12px;
+    border: 1px solid #ddd;
+}
+
+#formB2W .text:focus, #formB2W .desc:focus {
+    border-color: #ccc;
+}
+
+#formB2W .btn {
+    background: rgba(255, 255, 255, 1);
+    background: -moz-linear-gradient(top, rgba(255, 255, 255, 1) 0%, rgba(246, 246, 246, 1) 47%, rgba(237, 237, 237, 1) 100%);
+    background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(255, 255, 255, 1)), color-stop(47%, rgba(246, 246, 246, 1)), color-stop(100%, rgba(237, 237, 237, 1)));
+    background: -webkit-linear-gradient(top, rgba(255, 255, 255, 1) 0%, rgba(246, 246, 246, 1) 47%, rgba(237, 237, 237, 1) 100%);
+    background: -o-linear-gradient(top, rgba(255, 255, 255, 1) 0%, rgba(246, 246, 246, 1) 47%, rgba(237, 237, 237, 1) 100%);
+    background: -ms-linear-gradient(top, rgba(255, 255, 255, 1) 0%, rgba(246, 246, 246, 1) 47%, rgba(237, 237, 237, 1) 100%);
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 1) 0%, rgba(246, 246, 246, 1) 47%, rgba(237, 237, 237, 1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#ededed', GradientType=0);
+    cursor: pointer;
+}
+
+#formB2W .btn:hover {
+    background: rgba(237, 237, 237, 1);
+    background: -moz-linear-gradient(top, rgba(237, 237, 237, 1) 0%, rgba(246, 246, 246, 1) 47%, rgba(255, 255, 255, 1) 100%);
+    background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(237, 237, 237, 1)), color-stop(47%, rgba(246, 246, 246, 1)), color-stop(100%, rgba(255, 255, 255, 1)));
+    background: -webkit-linear-gradient(top, rgba(237, 237, 237, 1) 0%, rgba(246, 246, 246, 1) 47%, rgba(255, 255, 255, 1) 100%);
+    background: -o-linear-gradient(top, rgba(237, 237, 237, 1) 0%, rgba(246, 246, 246, 1) 47%, rgba(255, 255, 255, 1) 100%);
+    background: -ms-linear-gradient(top, rgba(237, 237, 237, 1) 0%, rgba(246, 246, 246, 1) 47%, rgba(255, 255, 255, 1) 100%);
+    background: linear-gradient(to bottom, rgba(237, 237, 237, 1) 0%, rgba(246, 246, 246, 1) 47%, rgba(255, 255, 255, 1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#ffffff', GradientType=0);
+}
+
+#formB2W .btn::before {
+    content: '\f063';
+    padding-right: 5px;
+    font: 14px TMWIcons;
+    color: #8a8a8a;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+}
+
+/** MODAL BOX */
+.modal-box {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    bottom: 0;
+    background: rgba(0, 0, 0, .6);
+    opacity: 0;
+    /* Isso faz com que o click seja ignorado no elemento. */
+    pointer-events: none;
+    /* Isso faz com que haja um delay de 400 milisegundos ao se alterar a opacidade  */
+    transition: opacity 400ms ease-in;
+}
+
+.modal-box .modal-content {
+    position: relative;
+    display: block;
+    max-width: 300px;
+    margin: -500px auto;
+    padding: 15px 20px;
+    background: #fff;
+    border: 5px solid rgba(0, 0, 0, .9);
+    border-radius: 5px;
+    font-size:14px;
+}
+
+.modal-box .modal-content b {
+    color: #5d010d;
+}
+
+.modal-box .modal-content .close-link {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: inline-block;
+    padding: 5px;
+    background: rgba(0, 0, 0, .9);
+    color: #fff;
+    text-decoration: none;
+}
+
+.modal-box .modal-content .close-link:hover {
+    background: #666;
+}
+
+/** Quando a URL possuir o ID (hashtag) do elemento */
+.modal-box:target {
+    /* Torna a mostrar a caixa */
+    opacity: 1;
+    /* Torna os clicks internos do elemento válidos */
+    pointer-events: auto;
+}
+
+.modal-box:target .modal-content {
+    margin: 6% auto 0;
+    /* Isso faz com que haja um delay de 500 milisegundos ao se alterar a margem  */
+    transition: margin 500ms ease-in;
+}
