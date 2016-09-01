@@ -11,10 +11,10 @@ body {
 }
 
 p {
-    margin:10px 0;
+    margin: 10px 0;
 }
 
-#formB2W {
+#formMobly {
     display: block;
     max-width: 268px;
     margin: 20px;
@@ -26,29 +26,46 @@ p {
     box-sizing: border-box;
 }
 
-#formB2W::after {
+#formMobly::after {
     content: '';
     display: block;
     clear: both;
 }
 
-#formB2W .campo {
+#formMobly .campo {
     float: left;
+}
+
+#formMobly .campo:first-child {
     margin-right: 10px;
 }
 
-#formB2W .campo:last-child {
+#formMobly .campo.full {
+    float: none;
+    clear: both;
+}
+#formMobly .campo.full .title {
+    padding-top: 10px;
+    color: #8a8a8a;
+}
+
+#formMobly .campo.full .title input {
+    float: left;
+    margin: 0 5px 0 1px;
+}
+
+#formMobly .campo:last-child {
     margin-right: 0;
 }
 
-#formB2W .title {
+#formMobly .title {
     display: block;
     height: 14px;
     margin-bottom: 5px;
     font-weight: bold;
 }
 
-#formB2W .text, #formB2W .desc, #formB2W .btn {
+#formMobly .text, #formMobly .desc, #formMobly .btn {
     max-height: 30px;
     padding: 7px 10px;
     color: #555;
@@ -56,11 +73,11 @@ p {
     border: 1px solid #ddd;
 }
 
-#formB2W .text:focus, #formB2W .desc:focus {
+#formMobly .text:focus, #formMobly .desc:focus {
     border-color: #ccc;
 }
 
-#formB2W .btn {
+#formMobly .btn {
     background: rgba(255, 255, 255, 1);
     background: -moz-linear-gradient(top, rgba(255, 255, 255, 1) 0%, rgba(246, 246, 246, 1) 47%, rgba(237, 237, 237, 1) 100%);
     background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(255, 255, 255, 1)), color-stop(47%, rgba(246, 246, 246, 1)), color-stop(100%, rgba(237, 237, 237, 1)));
@@ -72,7 +89,7 @@ p {
     cursor: pointer;
 }
 
-#formB2W .btn:hover {
+#formMobly .btn:hover {
     background: rgba(237, 237, 237, 1);
     background: -moz-linear-gradient(top, rgba(237, 237, 237, 1) 0%, rgba(246, 246, 246, 1) 47%, rgba(255, 255, 255, 1) 100%);
     background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(237, 237, 237, 1)), color-stop(47%, rgba(246, 246, 246, 1)), color-stop(100%, rgba(255, 255, 255, 1)));
@@ -83,7 +100,7 @@ p {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#ffffff', GradientType=0);
 }
 
-#formB2W .btn::before {
+#formMobly .btn::before {
     content: '\f063';
     padding-right: 5px;
     font: 14px TMWIcons;
@@ -117,7 +134,7 @@ p {
     background: #fff;
     border: 5px solid rgba(0, 0, 0, .9);
     border-radius: 5px;
-    font-size:14px;
+    font-size: 14px;
 }
 
 .modal-box .modal-content b {

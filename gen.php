@@ -16,12 +16,35 @@ if ((time() - $_SESSION[ 'TMWXD' ][ 'acesso' ]) > $_SESSION[ 'TMWXD' ][ 'periodo
     die('Acesso negado.');
 }
 
+// Pega dados iniciais do serviço, se houver
+$pathConf = __DIR__ . DIRECTORY_SEPARATOR . 'mobly.conf';
+$config = null;
+if (file_exists($pathConf)) {
+    $config = json_decode(file_get_contents($pathConf));
+    // Verificando existencia de chave obrigatória
+    if (! isset($config->descType)) {
+        $config = null;
+    }
+}
+$temConfig = ! is_null($config);
+
+// É apenas pra retornar o status do serviço?
+$serviceStatus = filter_input(INPUT_GET, 'service');
+if ($serviceStatus == 'status') {
+    if ($temConfig) {
+        die((isset($config->moblyAtivo) && $config->moblyAtivo == 1) ? '1' : '0');
+    }
+
+    // Se chegou aqui é pq o status não está ativo
+    die('0');
+}
+
 require_once '../config/conecta.class.php';
 
 // Inicializa variáveis
 $descType = filter_input(INPUT_POST, 'desc_type');
+$moblyAtivo = filter_input(INPUT_POST, 'mobly_ativo');
 $erro = filter_input(INPUT_GET, 'msg');
-$pathConf = __DIR__ . DIRECTORY_SEPARATOR . 'mobly.conf';
 $pdo = new Conecta();
 
 // ID Parceiro não informado?
@@ -29,12 +52,9 @@ if (! $descType || empty($descType)) {
     header('Content-type: text/html; charset=utf-8');
 
     // Verificando arquivo de pesquisa
-    if (file_exists($pathConf)) {
-        $config = json_decode(file_get_contents($pathConf));
-        // Verificando existencia de chaves
-        if (isset($config->descType)) {
-            $descType = $config->descType;
-        }
+    if ($temConfig) {
+        $descType = $config->descType;
+        $moblyAtivo = (isset($config->moblyAtivo) && $config->moblyAtivo == 1) ? 1 : 0;
     }
 
     // Pegando Descrições disponíveis
@@ -53,7 +73,8 @@ if (! $descType || empty($descType)) {
 
 // Gravando Valores escolhidos por padrão
 file_put_contents($pathConf, json_encode([
-    'descType' => $descType
+    'descType'   => $descType,
+    'moblyAtivo' => $moblyAtivo
 ]));
 
 // Diferentes descrições
