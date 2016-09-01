@@ -28,7 +28,7 @@ if (file_exists($pathConf)) {
 }
 $temConfig = ! is_null($config);
 
-// É apenas pra retornar o status do serviço?
+// É apenas pra retornar o status do serviço? (mobly/gen.php?service=status)
 $serviceStatus = filter_input(INPUT_GET, 'service');
 if ($serviceStatus == 'status') {
     if ($temConfig) {
