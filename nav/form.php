@@ -45,8 +45,8 @@ if (! isset($descTypes)) {
                         <b>Nenhum registro encontrado.</b>
                     </p>
                     <p>
-                        Verifique se os produtos possuem imagem e se todas as seções têm
-                        as categorias da Mobly.
+                        Verifique se os produtos possuem imagem e se todas os campos obrigatórios
+                        da Mobly estão preenchidos, bem como dimensões e peso do produto.
                     </p>
                     <a href="#close" class="close-link">X</a>
                 </div>

@@ -99,36 +99,93 @@ $ePromo = 'PRO_PROMOCAO > 0 AND
 // Gerando pesquisa
 $produtos = $pdo->execute("
     SELECT 
-        PRO_REF AS ID_ITEM_PARCEIRO,
-        PRO_NOME AS NOME_ITEM,
-        ROUND(PRO_PESO,0) AS PESO_UNITARIO,
-        $getDesc AS DESCRICAO_ITEM,
-        '' AS IMAGEM_ITEM,
-        ROUND(PRO_ALTURA * 1000, 0) AS ALTURA,
-        ROUND(PRO_LARGURA * 1000, 0) AS LARGURA,
-        ROUND(PRO_COMPRIMENTO * 1000, 0) AS COMPRIMENTO,
-        PRO_GTIN AS EAN,
-        '' AS ID_ITEM_PAI,
-        '' AS NOME_ITEM_PAI,
-        'E' AS TIPO_ITEM,
-        IF( PRO_ATIVO = 1 AND PRO_ESTOQUE > 0 AND PRO_VISIBILIDADE NOT LIKE '%loja%', 'A', 'I' ) AS SITUACAO_ITEM,
-        PRO_DIAS_PRAZO AS PRAZO_XD,
-        IF( $ePromo, ROUND(PRO_VALOR,2), '' ) AS PRECO_DE,
-        ROUND(IF( $ePromo, PRO_PROMOCAO, PRO_VALOR ),2) AS PRECO_POR,
-        PRO_ESTOQUE AS QTDE_ESTOQUE,
-        '' AS DEPARTAMENTO,
-        '' AS SETOR,
-        '' AS FAMILIA,
-        '' AS SUB_FAMILIA,
-        IF( PRO_SOB_ENCOMENDA = 1, '1', '0' ) AS PROCEDENCIA_ITEM,
-        FOR_NOME AS MARCA,
+        PRO_NOME AS `Name`,
+        FOR_NOME AS `Brand`,
+        PRO_REF AS `Model`,
+        PRO_GTIN AS `ProductId`,
+        PRO_REF AS `SellerSKU`,
+        PRO_REF AS `ParentSKU`,
+        PRO_ESTOQUE AS `Quantity`,
+        PRO_ALTURA AS `BoxHeight`,
+        PRO_LARGURA AS `BoxWidth`,
+        PRO_COMPRIMENTO AS `BoxLength`,
+        ROUND(PRO_PESO / 1000, 2) AS `BoxWeight`,
+        PRO_DIAS_PRAZO AS `SupplierDeliveryTime`,
+        PRO_ALTURA AS `ProductHeight`,
+        PRO_LARGURA AS `ProductWidth`,
+        PRO_COMPRIMENTO AS `ProductLength`,
+        ROUND(PRO_PESO / 1000, 2) AS `ProductWeight`,
+        CONCAT(PRO_ALTURA,'x',PRO_LARGURA,'x',PRO_COMPRIMENTO,'cm') AS `SizeDescription`,
+        MOB_COLOR AS `Color`,
+        MOB_COLOR_FAMILY AS `ColorFamily`,
+        MOB_MATERIAL AS `Material`,
+        MOB_MATERIAL_FAMILY AS `MaterialFamily`,
+        ROUND(PRO_VALOR,2) AS `Price`,
+        IF( $ePromo, ROUND(PRO_PROMOCAO,2), '') AS `SalePrice`,
+        PRO_PROMO_INI AS `SaleStartDate`,
+        PRO_PROMO_FIM AS `SaleEndDate`,
+        '' AS `PrimaryCategory`,
+        '' AS `Categories`,
+        '' AS `AnchorCategory`,
+        '' AS `RepProductCategory`,
+        '' AS `RepCategoryOtb`,
+        '' AS `RepProductDepartment`,
+        '' AS `Manager`,
+        '' AS `GroupCategoryOtb`,
+        '' AS `RepProductSubcategory`,
+        MOB_PRODUCT_WARRANTY AS `ProductWarranty`,
+        MOB_COLOR AS `ColorSimple`,
+        MOB_COLOR_FAMILY AS `ColorSupplier`,
+        PRO_NOME AS `SupplierSimpleName`,
+        'Único' AS `Variation`,
+        IF(PRO_SOB_ENCOMENDA=1, 'Importado', 'Nacional') AS `OriginCountry`,
+        (SELECT CON_UF_LOJA FROM config LIMIT 0,1) AS `OriginState`,
+        $getDesc AS `Description`,
+        '' AS `ProductContents`,
+        '' AS `ProductInstructions`,
+        '' AS `MainImage`,
+        '' AS `Image2`,
+        '' AS `Image3`,
+        '' AS `Image4`,
+        '' AS `Image5`,
+        MOB_WEIGHT_CAPACITY AS `WeightCapacity`,
+        MOB_DIMENSIONS AS `Dimensions`,
+        MOB_WATT AS `Watt`,
+        MOB_INDICATE_AGE AS `IndicatedAge`,
+        MOB_FOR_MATTRESS_TYPE AS `ForMattressType`,
+        MOB_NUMBER_OF_PIECES AS `NumberOfPieces`,
+        MOB_SEAT_GROUND_HEIGHT AS `SeatGroundHeight`,
+        MOB_RECOMMENDED_WEIGHT_CH AS `RecommendedWeightCh`,
+        MOB_PAINTING_FINISHING AS `PaintingFinishing`,
+        MOB_COATING AS `Coating`,
+        MOB_TYPE AS `Type`,
+        MOB_MATERIAL_TABLE_TOP AS `MaterialTableTop`,
+        MOB_FORMAT_GI AS `FormatGl`,
+        MOB_DECORATIVE AS `Decorative`,
+        MOB_TYPE_OF_FOOT_GI AS `TypeOfFootGl`,
+        MOB_NUMBER_OF_DOORS AS `NumberOfDoors`,
+        MOB_NUMBER_OF_DRAWERS AS `NumberOfDrawers`,
+        MOB_NUMBER_OF_SHELVES AS `NumberOfShelves`,
+        MOB_LAMP_NUMBER AS `LampNumber`,
+        MOB_GLOBAL_CAPACITY AS `GlobalCapacity`,
+        MOB_SOCKET_TYPE AS `SocketType`,
+        MOB_VOLTAGE_HW AS `VoltageHw`,
+        MOB_ASSEMBLY_REQUIRED AS `AssemblyRequired`,
+        
         produto.PRO_ID AS TEMP_ID
 
     FROM produto
+        INNER JOIN mobly ON mobly.PRO_ID = produto.PRO_ID
         LEFT JOIN fornecedor ON produto.FOR_ID = fornecedor.FOR_ID
     
     WHERE
-      SUB_PRO_ID IS NULL AND PRO_VALOR > 0
+      SUB_PRO_ID IS NULL AND PRO_VALOR > 0 AND 
+      ( PRO_VISIBILIDADE NOT LIKE '%mobly%' OR PRO_VISIBILIDADE IS NULL ) AND
+      MOB_COLOR IS NOT NULL AND MOB_COLOR <> '' AND
+      MOB_COLOR_FAMILY IS NOT NULL AND MOB_COLOR_FAMILY <> '' AND
+      MOB_MATERIAL IS NOT NULL AND MOB_MATERIAL <> '' AND
+      MOB_MATERIAL_FAMILY IS NOT NULL AND MOB_MATERIAL_FAMILY <> '' AND
+      PRO_ALTURA > 0 AND PRO_LARGURA > 0 AND PRO_COMPRIMENTO > 0 AND PRO_PESO > 0
 ");
 
 // Tratando os dados
@@ -145,29 +202,29 @@ foreach ($produtos as $produto) {
       WHERE PRO_ID = '{$produto->TEMP_ID}' AND IMG_TIPO = 1 ORDER BY IMG_ORDEM
     ");
 
+    // Tem pelo menos 1 imagem?
     if (! isset($imagens[ 0 ]->img)) {
         continue;
     }
 
     // Salvando imagens
-    $imgTemp = [];
-    foreach ($imagens as $img) {
-        $imgTemp[] = $img->img;
-    }
-
-    $produto->IMAGEM_ITEM = implode(',', $imgTemp);
+    $produto->MainImage = $imagens[ 0 ]->img;
+    $produto->Image2 = isset($imagens[ 1 ]->img) ? $imagens[ 1 ]->img : '';
+    $produto->Image3 = isset($imagens[ 2 ]->img) ? $imagens[ 2 ]->img : '';
+    $produto->Image4 = isset($imagens[ 3 ]->img) ? $imagens[ 3 ]->img : '';
+    $produto->Image5 = isset($imagens[ 4 ]->img) ? $imagens[ 4 ]->img : '';
 
     // Apagando chaves temporárias
     unset($produto->TEMP_ID);
 
     // Corrigindo descrição
-    $produto->DESCRICAO_ITEM =
+    $produto->Description =
         // Remove ;
         trim(str_replace(';', ',',
             // Remove espaços extras
             preg_replace('/[\n\r\s\t]+/i', ' ',
                 // Limpa tags HTML
-                strip_tags($produto->DESCRICAO_ITEM)
+                strip_tags($produto->Description, '<p><strong>')
             )
         ));
 
@@ -191,11 +248,11 @@ foreach ($produtos as $produto) {
 }
 
 // Remove quebra de linha final
-$saida = substr($saida, 0, -1);
+$saida = utf8_decode( substr($saida, 0, -1) );
 
 if (! empty($saida)) {
     // Cabeçalhos
-    header('Content-type: text/csv; charset=utf-8');
+    header('Content-type: text/csv; charset=iso-8859-1');
     header('Content-Disposition: attachment; filename=mobly-' . date('Y-m-d-H-i') . '.csv');
     header('Cache-Control: no-cache, no-store, must-revalidate'); # HTTP 1.1
     header('Pragma: no-cache'); # HTTP 1.0
